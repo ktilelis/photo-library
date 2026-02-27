@@ -1,12 +1,11 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { NavigationHeader } from '@core/layout/navigation-header/navigation-header';
 
 @Component({
   selector: 'xm-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, NavigationHeader],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
-export class App {
-  protected readonly title = signal('xm-app');
-}
+export class App {}

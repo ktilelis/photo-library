@@ -1,0 +1,18 @@
+﻿.navigation-header {
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid var(--mat-sys-outline-variant, gray);
+}
+
+.navigation-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navigation-link.active {
+  color: var(--mat-sys-primary);
+  background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+}
