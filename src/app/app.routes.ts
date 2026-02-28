@@ -7,8 +7,12 @@ export const routes: Routes = [
     loadComponent: () => import('./features/photostream/photostream').then(c => c.Photostream)
   },
   {
-    path: 'favourites',
+    path: 'favorites',
     loadComponent: () => import('./features/favourites/favourites').then(c => c.Favourites)
+  },
+  {
+    path: 'photos/:id',
+    loadComponent: () => import('./features/photo-detail/photo-detail').then(c => c.PhotoDetail)
   },
   {
     path: '**',
