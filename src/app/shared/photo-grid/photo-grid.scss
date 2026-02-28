@@ -1,0 +1,11 @@
+.photostream-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 200px);
+  grid-gap: 2rem;
+  padding: 4rem;
+}
+
+.no-photos-container {
+  text-align: center;
+  padding: 4rem;
+}

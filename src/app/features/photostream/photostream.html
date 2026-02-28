@@ -1,0 +1,7 @@
+<xm-photo-grid [photos]="photos()"></xm-photo-grid>
+<div id="loadMore" xmInfiniteScrollTrigger (triggerScroll)="loadPhotos()" data-testid="load-more-sentry"></div>
+@if (isLoading()) {
+  <section class="centered-container" data-testid="loader">
+    <mat-spinner [diameter]="60"></mat-spinner>
+  </section>
+}
