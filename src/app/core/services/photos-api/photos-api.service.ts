@@ -1,23 +1,33 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Photo } from '@core/model';
-import { catchError, delay, Observable } from 'rxjs';
-import { mapError } from './error-mapper';
+import { delay, Observable, of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PhotosApiService {
-  readonly #sourceUrl = 'https://picsum.photos';
-  readonly #http = inject(HttpClient);
+  readonly #baseUrl = 'https://picsum.photos/seed';
+  readonly #pageSize = 30;
 
-  getPhotos(page = 1): Observable<Photo[]> {
-    return this.#http
-      .get<Photo[]>(`${this.#sourceUrl}/v2/list?page=${page}`)
-      .pipe(delay(this.#getRandomDelay()), catchError(mapError));
+  getPhotos(): Observable<Photo[]> {
+    const photos = Array.from({ length: this.#pageSize }, () => this.#buildSeededPhoto());
+
+    return of(photos).pipe(delay(this.#applyRandomDelay()));
   }
 
-  #getRandomDelay(): number {
+  #buildSeededPhoto(width = 200, height = 300): Photo {
+    const seed = crypto.randomUUID();
+    const imageUrl = `${this.#baseUrl}/${encodeURIComponent(seed)}/${width}/${height}`;
+
+    return {
+      id: seed,
+      width,
+      height,
+      downloadUrl: imageUrl
+    };
+  }
+
+  #applyRandomDelay(): number {
     return Math.floor(Math.random() * 101) + 200;
   }
 }
