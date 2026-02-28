@@ -1,0 +1,10 @@
+<section class="photostream-container" data-testid="photo-grid">
+  @for (photo of photos(); track photo.id; let first = $first) {
+    <xm-photo-card
+      [photo]="photo"
+      [isPriority]="first"
+      (photoClicked)="clickedPhoto.emit($event)"
+      data-testid="photo-card"
+    />
+  }
+</section>

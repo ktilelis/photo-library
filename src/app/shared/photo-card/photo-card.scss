@@ -1,0 +1,28 @@
+.photo {
+  margin: 0;
+  position: relative;
+
+  .photo-button {
+    border: none;
+    background: none;
+    padding: 0;
+    display: block;
+
+    &:hover {
+      cursor: pointer;
+    }
+
+    img {
+      border-radius: 1rem;
+      display: block;
+      transition:
+        transform 120ms ease,
+        filter 120ms ease;
+    }
+
+    &:active img {
+      transform: translateY(1px) scale(0.95);
+      filter: brightness(0.95);
+    }
+  }
+}

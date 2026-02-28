@@ -1,0 +1,18 @@
+<figure class="photo" data-testid="photo-container">
+  <button
+    type="button"
+    class="photo-button"
+    aria-label="View image a random image"
+    (click)="photoClicked.emit(photo().id)"
+    data-testid="photo-button"
+  >
+    <img
+      [ngSrc]="photo().downloadUrl"
+      [alt]="'Image is randomly generated'"
+      [width]="photo().width"
+      [height]="photo().height"
+      [priority]="isPriority()"
+      data-testid="photo"
+    />
+  </button>
+</figure>
