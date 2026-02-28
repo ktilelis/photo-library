@@ -1,0 +1,19 @@
+@let favourite = photo();
+@if (favourite) {
+  <section class="photo-container">
+    <img
+      [ngSrc]="favourite.downloadUrl"
+      alt="Favourite photo"
+      [width]="favourite.width"
+      [height]="favourite.height"
+      priority
+      class="photo"
+      data-testid="image"
+    />
+    <button matButton (click)="removeFromFavorites()" class="remove-favorite-button">Remove from favorites</button>
+  </section>
+} @else {
+  <section class="no-photo-message" data-testid="no-favorite">
+    <p>Photo was not found among favorites.</p>
+  </section>
+}

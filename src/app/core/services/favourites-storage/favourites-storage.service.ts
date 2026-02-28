@@ -19,7 +19,7 @@ export class FavouritesStorageService {
       try {
         this.#localStorage.setItem(this.#key, JSON.stringify(favs));
       } catch {
-        // Ignore storage write errors (e.g. quota or restricted contexts)
+        // Ignore storage errors (in unlikely event when storage size is exceeded)
       }
     });
   }
