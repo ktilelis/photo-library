@@ -1,4 +1,4 @@
-<xm-photo-grid [photos]="photos()"></xm-photo-grid>
+<xm-photo-grid [photos]="photos()" (clickedPhoto)="addToFavourites($event)"></xm-photo-grid>
 <div id="loadMore" xmInfiniteScrollTrigger (triggerScroll)="loadPhotos()" data-testid="load-more-sentry"></div>
 @if (isLoading()) {
   <section class="centered-container" data-testid="loader">
