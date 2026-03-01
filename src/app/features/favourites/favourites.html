@@ -1,7 +1,5 @@
 @if (photos().length) {
   <xm-photo-grid [photos]="photos()" (clickedPhoto)="viewPhoto($event)" data-testid="favourites-photo-grid" />
 } @else {
-  <section class="no-favourites-container">
-    <p data-testid="no-favourites-message">No favourite photos were found.</p>
-  </section>
+  <xm-message-area message="No favourite photos were found." data-testid="no-favourites-message" />
 }

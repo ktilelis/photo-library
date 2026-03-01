@@ -2,11 +2,12 @@ import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/c
 import { Router } from '@angular/router';
 import { Photo } from '@core/model';
 import { FavouritesStorageService } from '@core/services/favourites-storage/favourites-storage.service';
+import { MessageArea } from '@shared/message-area/message-area';
 import { PhotoGrid } from '@shared/photo-grid/photo-grid';
 
 @Component({
   selector: 'xm-favourites',
-  imports: [PhotoGrid],
+  imports: [PhotoGrid, MessageArea],
   templateUrl: './favourites.html',
   styleUrl: './favourites.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
