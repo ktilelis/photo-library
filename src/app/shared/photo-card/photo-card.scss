@@ -1,3 +1,5 @@
+@use 'styles/tokens' as t;
+
 .photo {
   margin: 0;
   position: relative;
@@ -13,11 +15,11 @@
     }
 
     img {
-      border-radius: 1rem;
+      border-radius: t.$radius-md;
       display: block;
       transition:
-        transform 120ms ease,
-        filter 120ms ease;
+        transform t.$duration-fast t.$ease-standard,
+        filter t.$duration-fast t.$ease-standard;
     }
 
     &:active img {
