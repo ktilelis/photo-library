@@ -1,0 +1,13 @@
+@use 'styles/mixins' as m;
+@use 'styles/tokens' as t;
+
+.centered-container {
+  @include m.flex-center(center, center);
+}
+
+.no-photo-message {
+  @include m.flex-center(center, center);
+  margin-top: t.$space-2;
+  padding: t.$space-2;
+  text-align: center;
+}

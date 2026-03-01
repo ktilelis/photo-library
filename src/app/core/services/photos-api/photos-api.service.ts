@@ -33,6 +33,6 @@ export class PhotosApiService {
   }
 
   #applyRandomDelay(): number {
-    return Math.floor(Math.random() * 101) + 200;
+    return Math.floor(Math.random() * 5000) + 200;
   }
 }

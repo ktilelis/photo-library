@@ -1,18 +1,21 @@
-﻿.navigation-header {
-  padding: 1rem;
+@use 'styles/mixins' as m;
+@use 'styles/tokens' as t;
+
+.navigation-header {
+  padding: t.$space-2;
   text-align: center;
   border: 1px solid var(--mat-sys-outline-variant, gray);
 }
 
 .navigation-links {
-  display: flex;
+  @include m.flex-center(center, center);
   flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
+  gap: t.$space-2;
 }
 
-.navigation-link.active {
-  color: var(--mat-sys-primary);
-  background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+.navigation-link {
+  &.active {
+    color: var(--mat-sys-primary);
+    background-color: color-mix(in srgb, var(--mat-sys-primary) 12%, transparent);
+  }
 }

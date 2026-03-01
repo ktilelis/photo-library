@@ -1,11 +1,14 @@
+@use 'styles/mixins' as m;
+@use 'styles/tokens' as t;
+
 .photostream-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, 200px);
-  grid-gap: 2rem;
-  padding: 4rem;
-}
+  gap: t.$space-4;
+  padding: t.$space-8;
 
-.no-photos-container {
-  text-align: center;
-  padding: 4rem;
+  @include m.down(640px) {
+    gap: t.$space-2;
+    padding: t.$space-2;
+  }
 }
