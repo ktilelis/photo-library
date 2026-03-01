@@ -1,16 +1,16 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { Photo } from '@core/model';
 import { FavouritesStorageService } from '@core/services/favourites-storage/favourites-storage.service';
 import { PhotosApiService } from '@core/services/photos-api/photos-api.service';
 import { InfiniteScrollTrigger } from '@shared/infinite-scroll-trigger/infinite-scroll-trigger';
+import { Loader } from '@shared/loader/loader';
 import { PhotoGrid } from '@shared/photo-grid/photo-grid';
 import { finalize } from 'rxjs';
 
 @Component({
   selector: 'xm-photostream',
-  imports: [PhotoGrid, MatProgressSpinner, InfiniteScrollTrigger],
+  imports: [PhotoGrid, InfiniteScrollTrigger, Loader],
   templateUrl: './photostream.html',
   styleUrl: './photostream.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
