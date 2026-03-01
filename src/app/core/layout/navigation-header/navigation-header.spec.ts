@@ -25,7 +25,7 @@ describe('NavigationHeader', () => {
       providers: [
         provideRouter([
           { path: '', component: DummyRouteComponent },
-          { path: 'favourites', component: DummyRouteComponent }
+          { path: 'favorites', component: DummyRouteComponent }
         ])
       ]
     }).compileComponents();
@@ -45,9 +45,9 @@ describe('NavigationHeader', () => {
     const links = getNavigationLinks(fixture);
     expect(links?.length).toBe(2);
     expect(links[0].textContent.trim()).toBe('Photos');
-    expect(links[1].textContent.trim()).toBe('Favourites');
+    expect(links[1].textContent.trim()).toBe('Favorites');
     expect(links[0].getAttribute('routerLink')).toBe('/');
-    expect(links[1].getAttribute('routerLink')).toBe('/favourites');
+    expect(links[1].getAttribute('routerLink')).toBe('/favorites');
   });
 
   it('should mark Photos as active when navigating to root path', async () => {
@@ -61,8 +61,8 @@ describe('NavigationHeader', () => {
     expect(links[1].classList).not.toContain('active');
   });
 
-  it('should mark Favourites as active when navigating to favourites path', async () => {
-    await router.navigateByUrl('/favourites');
+  it('should mark Favorites as active when navigating to favorites path', async () => {
+    await router.navigateByUrl('/favorites');
     fixture.detectChanges();
     await fixture.whenStable();
 
