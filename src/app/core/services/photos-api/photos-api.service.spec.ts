@@ -65,4 +65,42 @@ describe('PhotosApiService', () => {
       expect(result).toHaveLength(30);
     });
   });
+
+  describe('getPhotoInfo', () => {
+    it('should return a seeded 1000x1000 photo for the given id after the minimum delay', () => {
+      vi.spyOn(Math, 'random').mockReturnValue(0);
+      let result: Photo | undefined;
+      const photoId = 'photo-id';
+
+      service.getPhotoInfo(photoId).subscribe(response => {
+        result = response;
+      });
+
+      vi.advanceTimersByTime(199);
+      expect(result).toBeUndefined();
+
+      vi.advanceTimersByTime(1);
+      expect(result).toEqual({
+        id: photoId,
+        width: 1000,
+        height: 1000,
+        downloadUrl: `https://picsum.photos/seed/${encodeURIComponent(photoId)}/1000/1000`
+      });
+    });
+
+    it('should return photo info after the maximum delay', () => {
+      vi.spyOn(Math, 'random').mockReturnValue(0.999);
+      let result: Photo | undefined;
+
+      service.getPhotoInfo('seed-1-seed-1').subscribe(response => {
+        result = response;
+      });
+
+      vi.advanceTimersByTime(299);
+      expect(result).toBeUndefined();
+
+      vi.advanceTimersByTime(1);
+      expect(result).toBeDefined();
+    });
+  });
 });

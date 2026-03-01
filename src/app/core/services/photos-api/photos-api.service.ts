@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Photo } from '@core/model';
-import { delay, Observable, of } from 'rxjs';
+import { delay, Observable, of, take } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +12,16 @@ export class PhotosApiService {
   getPhotos(): Observable<Photo[]> {
     const photos = Array.from({ length: this.#pageSize }, () => this.#buildSeededPhoto());
 
-    return of(photos).pipe(delay(this.#applyRandomDelay()));
+    return of(photos).pipe(delay(this.#applyRandomDelay()), take(1));
   }
 
-  #buildSeededPhoto(width = 200, height = 300): Photo {
-    const seed = crypto.randomUUID();
+  getPhotoInfo(id: string) {
+    const photoInfo = this.#buildSeededPhoto(id, 1000, 1000);
+    return of(photoInfo).pipe(delay(this.#applyRandomDelay()), take(1));
+  }
+
+  #buildSeededPhoto(seed?: string, width = 200, height = 300): Photo {
+    seed = seed || crypto.randomUUID();
     const imageUrl = `${this.#baseUrl}/${encodeURIComponent(seed)}/${width}/${height}`;
 
     return {
