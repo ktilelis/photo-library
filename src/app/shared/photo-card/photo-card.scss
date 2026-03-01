@@ -9,6 +9,7 @@
     background: none;
     padding: 0;
     display: block;
+    width: 100%;
 
     &:hover {
       cursor: pointer;
@@ -16,6 +17,8 @@
 
     img {
       border-radius: t.$radius-md;
+      width: 100%;
+      height: auto;
       display: block;
       transition:
         transform t.$duration-fast t.$ease-standard,

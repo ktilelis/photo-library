@@ -7,19 +7,8 @@ import { PhotoGrid } from '@shared/photo-grid/photo-grid';
 @Component({
   selector: 'xm-favourites',
   imports: [PhotoGrid],
-  template: ` @if (photos().length) {
-      <xm-photo-grid [photos]="photos()" (clickedPhoto)="viewPhoto($event)" data-testid="favourites-photo-grid" />
-    } @else {
-      <section class="no-favourites-container">
-        <p data-testid="no-favourites-message">No favourite photos were found.</p>
-      </section>
-    }`,
-  styles: `
-    .no-favourites-container {
-      text-align: center;
-      padding: 4rem;
-    }
-  `,
+  templateUrl: './favourites.html',
+  styleUrl: './favourites.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Favourites {
