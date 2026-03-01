@@ -2,11 +2,12 @@ import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
-import { Photo } from '@core/model';
+import { Photo, PhotoGalleryError } from '@core/model';
+import { NotificationsService } from '@core/notifications/notifications.service';
 import { FavouritesStorageService } from '@core/services/favourites-storage/favourites-storage.service';
 import { PhotosApiService } from '@core/services/photos-api/photos-api.service';
 import { resolveLocator } from '@testing/test-locator-helper';
-import { NEVER, of } from 'rxjs';
+import { NEVER, of, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PhotoDetail } from './photo-detail';
 
@@ -25,6 +26,9 @@ describe('PhotoDetail', () => {
   };
   let photosApiMock: {
     getPhotoInfo: ReturnType<typeof vi.fn>;
+  };
+  let notificationsServiceMock: {
+    dispatchNotification: ReturnType<typeof vi.fn>;
   };
 
   const getElementByTestId = (testId: string) => harness.routeNativeElement?.querySelector(resolveLocator(testId));
@@ -45,6 +49,9 @@ describe('PhotoDetail', () => {
         })
       )
     };
+    notificationsServiceMock = {
+      dispatchNotification: vi.fn()
+    };
 
     await TestBed.configureTestingModule({
       providers: [
@@ -59,6 +66,10 @@ describe('PhotoDetail', () => {
         {
           provide: PhotosApiService,
           useValue: photosApiMock
+        },
+        {
+          provide: NotificationsService,
+          useValue: notificationsServiceMock
         }
       ]
     }).compileComponents();
@@ -152,5 +163,29 @@ describe('PhotoDetail', () => {
     expect(favouritesStorageMock.removeFavourite).toHaveBeenCalledTimes(1);
     expect(favouritesStorageMock.removeFavourite).toHaveBeenCalledWith(photoId);
     expect(router.url).toBe('/favorites');
+  });
+
+  it('should dispatch notification when photo details request fails', async () => {
+    const photoId = 'photo-error';
+    const apiError: PhotoGalleryError = {
+      type: 'server',
+      message: 'Failed to load photo info.'
+    };
+
+    favouritesSignal.set({
+      [photoId]: {
+        id: photoId,
+        width: 200,
+        height: 300,
+        downloadUrl: 'https://picsum.photos/id/2/200/300'
+      }
+    });
+    photosApiMock.getPhotoInfo.mockReturnValueOnce(throwError(() => apiError));
+
+    await harness.navigateByUrl(`/photos/${photoId}`, PhotoDetail);
+
+    expect(notificationsServiceMock.dispatchNotification).toHaveBeenCalledTimes(1);
+    expect(notificationsServiceMock.dispatchNotification).toHaveBeenCalledWith(apiError.message);
+    expect(getElementByTestId('no-favorite')).toBeTruthy();
   });
 });
