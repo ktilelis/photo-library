@@ -10,17 +10,17 @@ export class PhotosApiService {
   readonly #pageSize = 30;
 
   getPhotos(): Observable<Photo[]> {
-    const photos = Array.from({ length: this.#pageSize }, () => this.#buildSeededPhoto());
+    const photos = Array.from({ length: this.#pageSize }, () => this.#buildPhoto());
 
     return of(photos).pipe(delay(this.#applyRandomDelay()), take(1));
   }
 
   getPhotoInfo(id: string) {
-    const photoInfo = this.#buildSeededPhoto(id, 1000, 1000);
+    const photoInfo = this.#buildPhoto(id, 1000, 1000);
     return of(photoInfo).pipe(delay(this.#applyRandomDelay()), take(1));
   }
 
-  #buildSeededPhoto(seed?: string, width = 200, height = 300): Photo {
+  #buildPhoto(seed?: string, width = 200, height = 300): Photo {
     seed = seed || crypto.randomUUID();
     const imageUrl = `${this.#baseUrl}/${encodeURIComponent(seed)}/${width}/${height}`;
 

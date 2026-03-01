@@ -3,6 +3,7 @@
 
 .centered-container {
   @include m.flex-center(center, center);
+  padding: t.$space-2;
 }
 
 .no-photo-message {

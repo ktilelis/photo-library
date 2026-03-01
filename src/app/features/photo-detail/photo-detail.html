@@ -1,19 +1,21 @@
-@let favourite = photo();
-@if (favourite) {
-  <section class="photo-container">
-    <img
-      [ngSrc]="favourite.downloadUrl"
-      alt="Favourite photo"
-      [width]="favourite.width"
-      [height]="favourite.height"
-      priority
-      class="photo"
-      data-testid="image"
-    />
-    <button matButton (click)="removeFromFavorites()" class="remove-favorite">Remove from favorites</button>
-  </section>
+@if (isLoading()) {
+  <xm-loader data-testid="photo-loader" />
 } @else {
-  <section class="no-photo-message" data-testid="no-favorite">
-    <p>Photo was not found among favorites.</p>
-  </section>
+  @let favourite = photo();
+  @if (favourite) {
+    <section class="photo-container">
+      <img
+        [ngSrc]="favourite.downloadUrl"
+        alt="Favourite photo"
+        [width]="favourite.width"
+        [height]="favourite.height"
+        priority
+        class="photo"
+        data-testid="image"
+      />
+      <button matButton (click)="removeFromFavorites()" class="remove-favorite">Remove from favorites</button>
+    </section>
+  } @else {
+    <xm-message-area message="Photo was not found among favorites." data-testid="no-favorite" />
+  }
 }
