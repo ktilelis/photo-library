@@ -24,8 +24,14 @@ describe('NavigationHeader', () => {
       imports: [NavigationHeader],
       providers: [
         provideRouter([
-          { path: '', component: DummyRouteComponent },
-          { path: 'favorites', component: DummyRouteComponent }
+          { path: '', component: DummyRouteComponent, data: { activeSection: 'photos' } },
+          { path: 'favorites', component: DummyRouteComponent, data: { activeSection: 'favorites' } },
+          {
+            path: 'photos/:id',
+            component: DummyRouteComponent,
+            data: { activeSection: 'favorites' }
+          },
+          { path: '**', redirectTo: '' }
         ])
       ]
     }).compileComponents();
@@ -46,8 +52,8 @@ describe('NavigationHeader', () => {
     expect(links?.length).toBe(2);
     expect(links[0].textContent.trim()).toBe('Photos');
     expect(links[1].textContent.trim()).toBe('Favorites');
-    expect(links[0].getAttribute('routerLink')).toBe('/');
-    expect(links[1].getAttribute('routerLink')).toBe('/favorites');
+    expect(links[0].getAttribute('href')).toBe('/');
+    expect(links[1].getAttribute('href')).toBe('/favorites');
   });
 
   it('should mark Photos as active when navigating to root path', async () => {
@@ -70,5 +76,27 @@ describe('NavigationHeader', () => {
 
     expect(links[0].classList).not.toContain('active');
     expect(links[1].classList).toContain('active');
+  });
+
+  it('should highlight Favorites when navigating to photos/:id', async () => {
+    await router.navigateByUrl('/photos/123');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const links = getNavigationLinks(fixture);
+
+    expect(links[0].classList).not.toContain('active');
+    expect(links[1].classList).toContain('active');
+  });
+
+  it('should highlight Photos when navigating to an invalid route', async () => {
+    await router.navigateByUrl('/here-be-dragons');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const links = getNavigationLinks(fixture);
+
+    expect(links[0].classList).toContain('active');
+    expect(links[1].classList).not.toContain('active');
   });
 });

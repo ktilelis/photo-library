@@ -74,6 +74,6 @@ describe('PhotoCard', () => {
   it('should render the expected accessibility label on the button', () => {
     const buttonElement: HTMLButtonElement = getElementByLocator<PhotoCard>(fixture, 'photo-button');
 
-    expect(buttonElement.getAttribute('aria-label')).toBe('View image a random image');
+    expect(buttonElement.getAttribute('aria-label')).toBe('View a random image');
   });
 });

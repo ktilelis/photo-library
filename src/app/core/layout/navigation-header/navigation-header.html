@@ -1,13 +1,8 @@
 <header class="navigation-header">
   <nav data-testid="navigation-links" class="navigation-links">
-    <a
-      matButton
-      routerLink="/"
-      routerLinkActive="active"
-      [routerLinkActiveOptions]="{ exact: true }"
-      class="navigation-link"
-      >Photos</a
+    <a matButton routerLink="/" [class.active]="activeSection() === 'photos'" class="navigation-link">Photos</a>
+    <a matButton routerLink="/favorites" [class.active]="activeSection() === 'favorites'" class="navigation-link"
+      >Favorites</a
     >
-    <a matButton routerLink="/favorites" routerLinkActive="active" class="navigation-link">Favorites</a>
   </nav>
 </header>
