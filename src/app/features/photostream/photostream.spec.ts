@@ -1,11 +1,12 @@
 import { Directive, output } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { Photo } from '@core/model';
+import { Photo, PhotoGalleryError } from '@core/model';
+import { NotificationsService } from '@core/notifications/notifications.service';
 import { PhotosApiService } from '@core/services/photos-api/photos-api.service';
 import { InfiniteScrollTrigger } from '@shared/infinite-scroll-trigger/infinite-scroll-trigger';
 import { getElementByLocator } from '@testing/test-locator-helper';
-import { of, Subject } from 'rxjs';
+import { of, Subject, throwError } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Photostream } from './photostream';
 
@@ -22,6 +23,9 @@ describe('Photostream', () => {
   let photosApiServiceMock: {
     getPhotos: ReturnType<typeof vi.fn>;
   };
+  let notificationsServiceMock: {
+    dispatchNotification: ReturnType<typeof vi.fn>;
+  };
 
   const firstBatch: Photo[] = [{ id: '1', width: 200, height: 300, downloadUrl: 'https://picsum.photos/id/1/200/300' }];
   const secondBatch: Photo[] = [
@@ -32,10 +36,16 @@ describe('Photostream', () => {
     photosApiServiceMock = {
       getPhotos: vi.fn()
     };
+    notificationsServiceMock = {
+      dispatchNotification: vi.fn()
+    };
 
     await TestBed.configureTestingModule({
       imports: [Photostream],
-      providers: [{ provide: PhotosApiService, useValue: photosApiServiceMock }]
+      providers: [
+        { provide: PhotosApiService, useValue: photosApiServiceMock },
+        { provide: NotificationsService, useValue: notificationsServiceMock }
+      ]
     })
       .overrideComponent(Photostream, {
         remove: { imports: [InfiniteScrollTrigger] },
@@ -94,5 +104,19 @@ describe('Photostream', () => {
 
     expect(photosApiServiceMock.getPhotos).toHaveBeenCalledTimes(2);
     expect(component.photos()).toEqual([...firstBatch, ...secondBatch]);
+  });
+
+  it('should dispatch notification when photo loading fails', () => {
+    const apiError: PhotoGalleryError = {
+      type: 'network',
+      message: 'Network error while loading photos.'
+    };
+    photosApiServiceMock.getPhotos.mockReturnValue(throwError(() => apiError));
+
+    fixture.detectChanges();
+
+    expect(notificationsServiceMock.dispatchNotification).toHaveBeenCalledTimes(1);
+    expect(notificationsServiceMock.dispatchNotification).toHaveBeenCalledWith(apiError.message);
+    expect(component.isLoading()).toBe(false);
   });
 });

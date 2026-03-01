@@ -3,11 +3,13 @@ import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
+import { PhotoGalleryError } from '@core/model';
+import { NotificationsService } from '@core/notifications/notifications.service';
 import { FavouritesStorageService } from '@core/services/favourites-storage/favourites-storage.service';
 import { PhotosApiService } from '@core/services/photos-api/photos-api.service';
 import { Loader } from '@shared/loader/loader';
 import { MessageArea } from '@shared/message-area/message-area';
-import { distinctUntilChanged, filter, map, of, startWith, switchMap } from 'rxjs';
+import { catchError, distinctUntilChanged, filter, map, of, startWith, switchMap } from 'rxjs';
 
 @Component({
   selector: 'xm-photo-detail',
@@ -20,6 +22,7 @@ export class PhotoDetail {
   readonly #router = inject(Router);
   readonly #favouritesStorage = inject(FavouritesStorageService);
   readonly #photoApiService = inject(PhotosApiService);
+  readonly #notificationsService = inject(NotificationsService);
 
   readonly #photoState = toSignal(
     this.#activatedRoute.paramMap.pipe(
@@ -33,6 +36,10 @@ export class PhotoDetail {
 
         return this.#photoApiService.getPhotoInfo(id).pipe(
           map(photo => ({ photo, isLoading: false })),
+          catchError((error: PhotoGalleryError) => {
+            this.#notificationsService.dispatchNotification(error.message);
+            return of({ photo: null, isLoading: false });
+          }),
           startWith({ photo: null, isLoading: true })
         );
       })
