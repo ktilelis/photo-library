@@ -6,7 +6,7 @@ import { Photo } from '@core/model';
 import { FavouritesStorageService } from '@core/services/favourites-storage/favourites-storage.service';
 import { PhotosApiService } from '@core/services/photos-api/photos-api.service';
 import { resolveLocator } from '@testing/test-locator-helper';
-import { of } from 'rxjs';
+import { NEVER, of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PhotoDetail } from './photo-detail';
 
@@ -112,6 +112,26 @@ describe('PhotoDetail', () => {
     });
     expect(getElementByTestId('no-favorite')).toBeFalsy();
     expect(getElementByTestId('image')).toBeTruthy();
+  });
+
+  it('should render loading state while favourite photo details are being fetched', async () => {
+    const photoId = 'photo-loading';
+    favouritesSignal.set({
+      [photoId]: {
+        id: photoId,
+        width: 200,
+        height: 300,
+        downloadUrl: 'https://picsum.photos/id/2/200/300'
+      }
+    });
+    photosApiMock.getPhotoInfo.mockReturnValueOnce(NEVER);
+
+    await harness.navigateByUrl(`/photos/${photoId}`, PhotoDetail);
+
+    const loader = getElementByTestId('loader');
+    expect(loader).toBeTruthy();
+    expect(getElementByTestId('image')).toBeFalsy();
+    expect(getElementByTestId('no-favorite')).toBeFalsy();
   });
 
   it('should remove current favourite and navigate to /favorites', async () => {

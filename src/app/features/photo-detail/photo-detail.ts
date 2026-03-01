@@ -1,15 +1,17 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FavouritesStorageService } from '@core/services/favourites-storage/favourites-storage.service';
 import { PhotosApiService } from '@core/services/photos-api/photos-api.service';
-import { distinctUntilChanged, filter, map, of, switchMap } from 'rxjs';
+import { Loader } from '@shared/loader/loader';
+import { MessageArea } from '@shared/message-area/message-area';
+import { distinctUntilChanged, filter, map, of, startWith, switchMap } from 'rxjs';
 
 @Component({
   selector: 'xm-photo-detail',
-  imports: [NgOptimizedImage, MatButton],
+  imports: [NgOptimizedImage, MatButton, MessageArea, Loader],
   templateUrl: './photo-detail.html',
   styleUrl: './photo-detail.scss'
 })
@@ -19,21 +21,26 @@ export class PhotoDetail {
   readonly #favouritesStorage = inject(FavouritesStorageService);
   readonly #photoApiService = inject(PhotosApiService);
 
-  readonly photo = toSignal(
+  readonly #photoState = toSignal(
     this.#activatedRoute.paramMap.pipe(
       map(pm => pm.get('id')),
       filter(id => !!id),
       distinctUntilChanged(),
       switchMap(id => {
         if (!id || !this.#favouritesStorage.favourites()[id]) {
-          return of(null);
+          return of({ photo: null, isLoading: false });
         }
 
-        return this.#photoApiService.getPhotoInfo(id);
+        return this.#photoApiService.getPhotoInfo(id).pipe(
+          map(photo => ({ photo, isLoading: false })),
+          startWith({ photo: null, isLoading: true })
+        );
       })
     ),
-    { initialValue: null }
+    { initialValue: { photo: null, isLoading: true } }
   );
+  readonly photo = computed(() => this.#photoState().photo);
+  readonly isLoading = computed(() => this.#photoState().isLoading);
 
   removeFromFavorites() {
     const photoId = this.photo()?.id;
