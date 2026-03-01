@@ -1,0 +1,6 @@
+@use 'styles/tokens' as t;
+
+.no-favourites-container {
+  text-align: center;
+  padding: clamp(t.$space-2, 3vw, t.$space-8);
+}
