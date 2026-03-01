@@ -6,6 +6,7 @@ import { FavouritesStorageService } from '@core/services/favourites-storage/favo
 import { PhotosApiService } from '@core/services/photos-api/photos-api.service';
 import { InfiniteScrollTrigger } from '@shared/infinite-scroll-trigger/infinite-scroll-trigger';
 import { PhotoGrid } from '@shared/photo-grid/photo-grid';
+import { finalize } from 'rxjs';
 
 @Component({
   selector: 'xm-photostream',
@@ -30,9 +31,11 @@ export class Photostream implements OnInit {
     this.isLoading.set(true);
     this.#photoApiService
       .getPhotos()
-      .pipe(takeUntilDestroyed(this.#destroyRef))
+      .pipe(
+        finalize(() => this.isLoading.set(false)),
+        takeUntilDestroyed(this.#destroyRef)
+      )
       .subscribe(photos => {
-        this.isLoading.set(false);
         this.photos.update(cur => cur.concat(photos));
       });
   }
