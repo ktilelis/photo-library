@@ -1,11 +1,11 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Photo } from '@core/model';
 import { FavouritesStorageService } from '@core/services/favourites-storage/favourites-storage.service';
-import { map } from 'rxjs';
+import { PhotosApiService } from '@core/services/photos-api/photos-api.service';
+import { distinctUntilChanged, filter, map, of, switchMap } from 'rxjs';
 
 @Component({
   selector: 'xm-photo-detail',
@@ -17,33 +17,31 @@ export class PhotoDetail {
   readonly #activatedRoute = inject(ActivatedRoute);
   readonly #router = inject(Router);
   readonly #favouritesStorage = inject(FavouritesStorageService);
+  readonly #photoApiService = inject(PhotosApiService);
 
-  #photoId = toSignal(this.#activatedRoute.paramMap.pipe(map(pm => pm.get('id'))), { initialValue: null });
+  readonly photo = toSignal(
+    this.#activatedRoute.paramMap.pipe(
+      map(pm => pm.get('id')),
+      filter(id => !!id),
+      distinctUntilChanged(),
+      switchMap(id => {
+        if (!id || !this.#favouritesStorage.favourites()[id]) {
+          return of(null);
+        }
 
-  photo = computed(() => {
-    const photoId = this.#photoId();
-    if (!photoId) {
-      return null;
-    }
-
-    const foundFavourite = this.#favouritesStorage.favourites()[photoId];
-    if (!foundFavourite) {
-      return null;
-    }
-
-    return {
-      id: photoId,
-      downloadUrl: `https://picsum.photos/seed/${encodeURIComponent(photoId)}/1000/1000`,
-      width: 1000,
-      height: 1000
-    } satisfies Photo;
-  });
+        return this.#photoApiService.getPhotoInfo(id);
+      })
+    ),
+    { initialValue: null }
+  );
 
   removeFromFavorites() {
-    if (!this.#photoId()) {
+    const photoId = this.photo()?.id;
+    if (!photoId) {
       return;
     }
-    this.#favouritesStorage.removeFavourite(this.#photoId()!);
+
+    this.#favouritesStorage.removeFavourite(photoId);
     this.#router.navigateByUrl('/favorites');
   }
 }

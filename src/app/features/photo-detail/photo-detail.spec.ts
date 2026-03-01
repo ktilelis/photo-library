@@ -4,7 +4,9 @@ import { provideRouter, Router } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
 import { Photo } from '@core/model';
 import { FavouritesStorageService } from '@core/services/favourites-storage/favourites-storage.service';
+import { PhotosApiService } from '@core/services/photos-api/photos-api.service';
 import { resolveLocator } from '@testing/test-locator-helper';
+import { of } from 'rxjs';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { PhotoDetail } from './photo-detail';
 
@@ -21,6 +23,9 @@ describe('PhotoDetail', () => {
     favourites: () => Record<string, Photo>;
     removeFavourite: ReturnType<typeof vi.fn>;
   };
+  let photosApiMock: {
+    getPhotoInfo: ReturnType<typeof vi.fn>;
+  };
 
   const getElementByTestId = (testId: string) => harness.routeNativeElement?.querySelector(resolveLocator(testId));
 
@@ -29,6 +34,16 @@ describe('PhotoDetail', () => {
     favouritesStorageMock = {
       favourites: favouritesSignal.asReadonly(),
       removeFavourite: vi.fn()
+    };
+    photosApiMock = {
+      getPhotoInfo: vi.fn((id: string) =>
+        of({
+          id,
+          width: 1000,
+          height: 1000,
+          downloadUrl: `https://picsum.photos/seed/${encodeURIComponent(id)}/1000/1000`
+        })
+      )
     };
 
     await TestBed.configureTestingModule({
@@ -40,6 +55,10 @@ describe('PhotoDetail', () => {
         {
           provide: FavouritesStorageService,
           useValue: favouritesStorageMock
+        },
+        {
+          provide: PhotosApiService,
+          useValue: photosApiMock
         }
       ]
     }).compileComponents();
@@ -61,6 +80,7 @@ describe('PhotoDetail', () => {
   it('should render no-favorite message when route id is not in favourites store', async () => {
     await harness.navigateByUrl('/photos/non-existing-id', PhotoDetail);
 
+    expect(photosApiMock.getPhotoInfo).not.toHaveBeenCalled();
     expect(getElementByTestId('image')).toBeFalsy();
 
     const noFavouriteElement = getElementByTestId('no-favorite');
@@ -73,13 +93,16 @@ describe('PhotoDetail', () => {
     favouritesSignal.set({
       [photoId]: {
         id: photoId,
-        width: 120,
-        height: 80,
-        downloadUrl: 'https://picsum.photos/id/1/120/80'
+        width: 200,
+        height: 300,
+        downloadUrl: 'https://picsum.photos/id/1/200/300'
       }
     });
 
     const component = await harness.navigateByUrl(`/photos/${photoId}`, PhotoDetail);
+
+    expect(photosApiMock.getPhotoInfo).toHaveBeenCalledTimes(1);
+    expect(photosApiMock.getPhotoInfo).toHaveBeenCalledWith(photoId);
 
     expect(component.photo()).toEqual({
       id: photoId,
@@ -96,9 +119,9 @@ describe('PhotoDetail', () => {
     favouritesSignal.set({
       [photoId]: {
         id: photoId,
-        width: 120,
-        height: 80,
-        downloadUrl: 'https://picsum.photos/id/1/120/80'
+        width: 200,
+        height: 300,
+        downloadUrl: 'https://picsum.photos/id/1/200/300'
       }
     });
     const component = await harness.navigateByUrl(`/photos/${photoId}`, PhotoDetail);
